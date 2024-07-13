@@ -25,6 +25,8 @@ abstract interface class authRemoteDataSource{
   });
 
   Future<UserModel?> getCurrentUserData();
+
+  Future<String?> logout();
 }
 class authRemoteDatasourceimpl implements authRemoteDataSource{
   //final SupabaseClient supabaseClient;
@@ -185,5 +187,17 @@ class authRemoteDatasourceimpl implements authRemoteDataSource{
       throw ServerException(e.toString());
     }
     }
+
+  @override
+  Future<String?> logout() async{
+    try{
+      if(FirebaseAuth.instance.currentUser!.uid!=null){
+        await FirebaseAuth.instance.signOut();
+      }
+      return null;
+    }catch(e){
+      throw ServerException(e.toString());
+    }
+  }
   
 }

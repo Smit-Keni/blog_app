@@ -14,6 +14,7 @@ import 'package:blogapp/features/blog/domain/usecases/upload_blog.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
 
+import 'features/auth/domain/usecases/user_logout.dart';
 import 'features/blog/presentation/bloc/blog_bloc.dart';
 import 'firebase_options.dart';
 
@@ -35,11 +36,13 @@ void _initAuth() {
     ..registerFactory(() => userSignUp(serviceLocator()))
     ..registerFactory(() => UserLogin(serviceLocator()))
     ..registerFactory(() => CurrentUser(serviceLocator()))
+    ..registerFactory(()=> UserLogout(serviceLocator()))
     ..registerLazySingleton(() => AuthBloc(
         UserSignUp: serviceLocator(),
         userLogin: serviceLocator(),
         currentUser: serviceLocator(),
-        appUserCubit: serviceLocator()));
+        appUserCubit: serviceLocator(),
+        userLogout: serviceLocator()));
 }
 
 void _initBlog() {
