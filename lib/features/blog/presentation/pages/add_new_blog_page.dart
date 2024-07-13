@@ -5,8 +5,10 @@ import 'package:blogapp/core/common/widgets/loader.dart';
 import 'package:blogapp/core/theme/app_pallete.dart';
 import 'package:blogapp/core/utils/pick_image.dart';
 import 'package:blogapp/core/utils/show_snackbar.dart';
+import 'package:blogapp/features/auth/data/models/user_json_model.dart';
 import 'package:blogapp/features/blog/presentation/pages/blog_page.dart';
 import 'package:blogapp/features/blog/presentation/widgets/blog_editor.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +28,7 @@ class AddNewBlogPage extends StatefulWidget {
 class _AddNewBlogPageState extends State<AddNewBlogPage> {
   final titleController = TextEditingController();
   final contentController = TextEditingController();
+
   final formKey = GlobalKey<FormState>();
   List<String> selectedTopics = [];
   File? image;
@@ -46,14 +49,19 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
     contentController.dispose();
   }
 
-  void uploadBlog() {
-    //final uid = (context.read<AppUserCubit>().state as AppUserLoggedIn).user.id;
+  void uploadBlog() async{
+    final name = await FirebaseFirestore.instance
+        .collection("users")
+        .where("uid",
+        isEqualTo: FirebaseAuth.instance.currentUser!.uid.toString())
+        .get();
+    final userName = name.docs.map((e)=>UserJsonModel.fromSnapshot(e)).single.name.toString();
 
     if (formKey.currentState!.validate() &&
         selectedTopics.isNotEmpty &&
         image != null) {
       context.read<BlogBloc>().add(BlogUpload(
-          uid: FirebaseAuth.instance.currentUser!.uid.toString(),
+          uid: userName,
           title: titleController.text,
           content: contentController.text,
           image: image!,
@@ -69,7 +77,6 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
           IconButton(
               onPressed: () {
                 uploadBlog();
-
               },
               icon: const Icon(Icons.done_rounded))
         ],
@@ -79,16 +86,14 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
           if (state is BlogFailure) {
             showSnackBar(context, state.error);
           } else if (state is BlogUploadSuccess) {
-            Navigator
-                .pushAndRemoveUntil(
+            Navigator.pushAndRemoveUntil(
                 context, BlogPage.route(), (route) => false);
           }
         },
         builder: (context, state) {
           if (state is BlogLoading) {
-            print(state.toString()+"testing");
+            print(state.toString() + "testing");
             return const Loader();
-
           }
           return SingleChildScrollView(
             child: Padding(

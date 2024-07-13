@@ -6,7 +6,7 @@ class Blog{
   final String imageUrl;
   final List<String> topics;
   final DateTime createdAt;
-  final String? posterName;
+
 
   Blog(
       {required this.id,
@@ -16,7 +16,7 @@ class Blog{
         required this.imageUrl,
         required this.topics,
         required this.createdAt,
-        this.posterName});
+       });
 
 
 }

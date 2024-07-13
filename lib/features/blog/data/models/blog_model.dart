@@ -1,4 +1,5 @@
 import 'package:blogapp/features/blog/domain/entities/blog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BlogModel extends Blog{
   BlogModel({required super.id,
@@ -8,7 +9,7 @@ class BlogModel extends Blog{
     required super.imageUrl,
     required super.topics,
     required super.createdAt,
-    super.posterName});
+    });
 
 
   factory BlogModel.fromJson(Map<String, dynamic> map) {
@@ -18,9 +19,24 @@ class BlogModel extends Blog{
       title: map["title"] as String,
       content: map["content"] as String,
       imageUrl: map["image_url"] as String,
-      topics: List<String>.from((map['topics'] ?? [])),
-      createdAt: map['updated_at']==null?DateTime.now()
-                                        :DateTime.parse(map['created_at']),
+      topics: List<String>.from(map['topics'] ?? []),
+      createdAt: map['created_at']==null?DateTime.now() :DateTime.parse(map['created_at']),
+    );
+  }
+
+  factory BlogModel.fromSnapshot(DocumentSnapshot <Map<String,dynamic>> document){
+
+    //final data = document.data()!;
+    final data = document.data()!;
+    return BlogModel(
+        id: data["id"],
+        uid: data["uid"],
+        title: data["title"],
+        content: data["content"],
+        imageUrl: data["image_url"],
+        topics: List<String>.from(data["topics"]),
+        createdAt: DateTime.parse(data["created_at"]),
+
     );
 
 
@@ -45,8 +61,8 @@ class BlogModel extends Blog{
     String? content,
     String? imageUrl,
     List<String>? topics,
-    DateTime? updatedAt,
-    String? posterName
+    DateTime? createdAt,
+
   }){
     return BlogModel(
       id: id?? this.id,
@@ -56,7 +72,7 @@ class BlogModel extends Blog{
       imageUrl: imageUrl?? this.imageUrl,
       topics: topics?? this.topics,
       createdAt: createdAt ?? this.createdAt,
-      posterName: posterName ??  this.posterName
+
     );
   }
 //

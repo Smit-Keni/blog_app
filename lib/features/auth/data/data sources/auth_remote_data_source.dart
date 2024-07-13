@@ -173,7 +173,7 @@ class authRemoteDatasourceimpl implements authRemoteDataSource{
           "name":userInfoRecord.name
 
         };
-        print(userInfoJson);
+        print(userInfoRecord);
         return UserModel.fromJson(userInfoJson);
       }
       // else{

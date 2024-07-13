@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:blogapp/core/error/exceptions.dart';
+import 'package:blogapp/features/auth/data/models/user_json_model.dart';
 import 'package:blogapp/features/blog/data/models/blog_json_model.dart';
 import 'package:blogapp/features/blog/data/models/blog_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:core';
+
+import '../models/blog_fetch_model.dart';
 
 abstract interface class BlogRemoteDataSource {
   Future<BlogModel> uploadBlog(BlogModel blog);
@@ -45,37 +48,32 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
   @override
   Future<List<BlogModel>> getAllBlogs() async {
     try {
-      final blogs = await FirebaseFirestore.instance.collection("blogs").get();
+      final blogsQuery = await FirebaseFirestore.instance
+          .collection("blogs")
+          .get();
+      //     .then((onValue) {
+      //   onValue.docs.forEach((record) {
+      //         final e= record.data();
+      //         //(record) => BlogModel.fromSnapshot(record);
+      //   });
+      // });
 
-      List<BlogModel> finalRecord = [];
+      // final blogRecord =
+      //     blogsQuery.docs.map((e) => (e.data()));
 
-      // for (var element in blogs) {
       final blogRecord =
-          blogs.docs.map((e) => BlogJsonModel.fromSnapshot(e)).toList();
+         blogsQuery.docs.map((e)=>BlogModel.fromSnapshot(e)).toList();
 
-      for (var i in blogRecord) {
-        var blogInfo = await FirebaseFirestore.instance
-            .collection("blogs")
-            .where("uid", isEqualTo: i.toString())
-            .get();
-        blogInfo.docs.map((e) => BlogJsonModel.fromSnapshot(e)).single;
-        var posterId =
-            await FirebaseFirestore.instance.collection("users").where("uid");
-      }
-      // final blogRecordJson = {
-      //   "created": blogRecord.createdAt,
-      //   "content": blogRecord.content,
-      //   "image_url": blogRecord.imageUrl,
-      //   "title": blogRecord.title,
-      //   "topics": blogRecord.topics,
-      //   "uid": blogRecord.uid,
-      //   "id": blogRecord.id
-      // };
-      //}
-      //return blogRecord.map((blog) => BlogModel.fromJson(blog)).toList();
-      print(blogRecord);
+      // final blogRecord =
+      // blogsQuery.toList();
+
+      // final blogR =
+      // blogsQuery.docs.map((e) => print(e));
+
+      //print(blogRecord);
 
       return blogRecord;
+      //return blogRecord.map((e)=>BlogModel.fromJson(e)).toList();
     } catch (e) {
       throw ServerException(e.toString());
     }

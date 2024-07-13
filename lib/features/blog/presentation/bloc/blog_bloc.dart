@@ -43,7 +43,7 @@ class BlogBloc extends Bloc<BlogEvent, BlogState> {
   }
 
   void _onFetchAllblogs(
-      BlogFetchAllBlogsevent,
+      BlogFetchAllBlogs event,
       Emitter<BlogState> emit,
       )async{
     final res = await _getAllBlogs(noParams());

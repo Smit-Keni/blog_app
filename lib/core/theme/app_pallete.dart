@@ -11,4 +11,5 @@ class AppPallete {
   static const Color errorColor = Colors.redAccent;
   static const Color transparentColor = Colors.transparent;
   static const Color categoryColor = Color(0xfffa66a9);
+  static const Color backgroundColor2 = Color(0xff232429);
 }
